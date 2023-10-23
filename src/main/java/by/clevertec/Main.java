@@ -78,7 +78,7 @@ public class Main {
 //        task17();
 //        task18();
 //        task19();
-        task20();
+//        task20();
         task21();
         task22();
     }
@@ -363,8 +363,9 @@ public class Main {
     }
 
     public static void task21() {
-        List<Student> students = Util.getStudents();
-//        students.stream() Продолжить ...
+        STUDENTS.stream()
+                .collect(Collectors.groupingBy(Student::getGroup))
+                .forEach((key, value) -> System.out.println("Group: " + key + ", number of students: " + value.size()));
     }
 
     public static void task22() {
