@@ -32,4 +32,11 @@ public class Constants {
         public static final String FEMALE = "Female";
         public static final String MALE = "Male";
     }
+
+    @UtilityClass
+    public class VaseMaterial {
+        public static final String GLASS = "Glass";
+        public static final String ALUMINUM = "Aluminum";
+        public static final String STEEL = "Steel";
+    }
 }

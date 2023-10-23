@@ -13,6 +13,9 @@ import static by.clevertec.util.Constants.Gender.FEMALE;
 import static by.clevertec.util.Constants.Gender.MALE;
 import static by.clevertec.util.Constants.Region.INDONESIAN;
 import static by.clevertec.util.Constants.SUBLIST_SIZE;
+import static by.clevertec.util.Constants.VaseMaterial.ALUMINUM;
+import static by.clevertec.util.Constants.VaseMaterial.GLASS;
+import static by.clevertec.util.Constants.VaseMaterial.STEEL;
 import static by.clevertec.util.PersonUtil.getFilterConditionByPersonAge;
 import static java.lang.Math.min;
 
@@ -29,6 +32,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -37,25 +41,28 @@ public class Main {
 
     private static final List<Animal> ANIMALS;
 
+    private static final DecimalFormat FORMAT;
+
     static {
         ANIMALS = Util.getAnimals();
+        FORMAT = new DecimalFormat("#.##");
     }
 
     public static void main(String[] args) {
-        task1();
-        task2();
-        task3();
-        task4();
-        task5();
-        task6();
-        task7();
-        task8();
-        task9();
-        task10();
-        task11();
-        task12();
-        task13();
-        task14();
+//        task1();
+//        task2();
+//        task3();
+//        task4();
+//        task5();
+//        task6();
+//        task7();
+//        task8();
+//        task9();
+//        task10();
+//        task11();
+//        task12();
+//        task13();
+//        task14();
         task15();
         task16();
         task17();
@@ -205,7 +212,6 @@ public class Main {
     public static void task14() {
         getTaskMark(14);
         List<Car> cars = Util.getCars();
-        DecimalFormat format = new DecimalFormat("#.##");
         AtomicReference<Double> totalPrice = new AtomicReference<>((double) 0);
         cars.stream()
                 .collect(Collectors.groupingBy(car -> {
@@ -227,7 +233,7 @@ public class Main {
                 })).values().stream()
                 .limit(6)
                 .forEach(list -> {
-                    System.out.println("Fare: " + format.format(FARE * list.stream()
+                    System.out.println("Fare: " + FORMAT.format(FARE * list.stream()
                             .mapToLong(Car::getMass)
                             .sum()));
                     totalPrice.updateAndGet(value -> value + list.stream()
@@ -236,13 +242,30 @@ public class Main {
                             .mapToDouble(Car::getMass)
                             .sum());
                 });
-        System.out.println("Total revenue: " + format.format(totalPrice.get()));
+        System.out.println("Total revenue: " + FORMAT.format(totalPrice.get()));
     }
 
     public static void task15() {
+        getTaskMark(15);
         List<Flower> flowers = Util.getFlowers();
-//        flowers.stream() Продолжить ...
-
+        int year = 5;
+        AtomicReference<Double> totalPrice = new AtomicReference<>((double) 0);
+        flowers.stream()
+                .sorted(Comparator.comparing(Flower::getOrigin).reversed()
+                        .thenComparing(Flower::getPrice)
+                        .thenComparing(Comparator.comparing(Flower::getWaterConsumptionPerDay).reversed()))
+//                .filter(flower -> flower.getCommonName().startsWith("S") && flower.getCommonName().substring(1).contains("c"))
+                .filter(flower -> Pattern.matches("^[C-S].*", flower.getCommonName()))
+//                .filter(flower -> Pattern.matches("^[S-V].*", flower.getCommonName()))
+                .filter(Flower::isShadePreferred)
+                .filter(flower -> flower.getFlowerVaseMaterial().contains(GLASS) || flower.getFlowerVaseMaterial().contains(ALUMINUM) || flower.getFlowerVaseMaterial().contains(STEEL))
+                .toList()
+                .forEach(flower -> {
+                    double oneFlowerPrice = flower.getPrice() + (flower.getWaterConsumptionPerDay() * 1.39 * year);
+                    System.out.println("The cost of servicing one " + flower.getCommonName() + " for " + year + " years is " + FORMAT.format(oneFlowerPrice) + "$");
+                    totalPrice.updateAndGet(value -> value + oneFlowerPrice);
+                });
+        System.out.println("\nThe cost of servicing of the flower garden for " + year + " years is " + FORMAT.format(totalPrice.get()) + "$");
     }
 
     public static void task16() {
