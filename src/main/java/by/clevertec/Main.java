@@ -59,26 +59,26 @@ public class Main {
     }
 
     public static void main(String[] args) {
-//        task1();
-//        task2();
-//        task3();
-//        task4();
-//        task5();
-//        task6();
-//        task7();
-//        task8();
-//        task9();
-//        task10();
-//        task11();
-//        task12();
-//        task13();
-//        task14();
-//        task15();
-//        task16();
-//        task17();
-//        task18();
-//        task19();
-//        task20();
+        task1();
+        task2();
+        task3();
+        task4();
+        task5();
+        task6();
+        task7();
+        task8();
+        task9();
+        task10();
+        task11();
+        task12();
+        task13();
+        task14();
+        task15();
+        task16();
+        task17();
+        task18();
+        task19();
+        task20();
         task21();
         task22();
     }
@@ -277,6 +277,7 @@ public class Main {
     }
 
     public static void task16() {
+        getTaskMark(16);
         STUDENTS.stream()
                 .filter(student -> student.getAge() < 18)
                 .sorted(Comparator.comparing(Student::getSurname))
@@ -284,6 +285,7 @@ public class Main {
     }
 
     public static void task17() {
+        getTaskMark(17);
         STUDENTS.stream()
                 .map(Student::getGroup)
                 .distinct()
@@ -291,6 +293,7 @@ public class Main {
     }
 
     public static void task18() {
+        getTaskMark(18);
         STUDENTS.stream()
                 .collect(Collectors.groupingBy(Student::getFaculty, Collectors.averagingInt(Student::getAge)))
                 .entrySet().stream()
@@ -299,6 +302,7 @@ public class Main {
     }
 
     public static void task19() {
+        getTaskMark(19);
         String group = "P-1";
         int examNumber = 4;
         System.out.println("List of students from group " + group + " who passed exam #" + examNumber);
@@ -315,6 +319,7 @@ public class Main {
     }
 
     public static void task20() {
+        getTaskMark(20);
         AtomicReference<Double> physicsSumMark = new AtomicReference<>((double) 0);
         AtomicReference<Integer> physicsCount = new AtomicReference<>(0);
         AtomicReference<Double> physicsAverageMark = new AtomicReference<>((double) 0);
@@ -363,13 +368,20 @@ public class Main {
     }
 
     public static void task21() {
+        getTaskMark(21);
         STUDENTS.stream()
                 .collect(Collectors.groupingBy(Student::getGroup))
                 .forEach((key, value) -> System.out.println("Group: " + key + ", number of students: " + value.size()));
     }
 
     public static void task22() {
-        List<Student> students = Util.getStudents();
-//        students.stream() Продолжить ...
+        getTaskMark(22);
+        STUDENTS.stream()
+                .collect(Collectors.groupingBy(Student::getFaculty))
+                .forEach((key, value) -> System.out.println("Faculty: " + key + ", min age of students: " + value.stream()
+                        .map(Student::getAge)
+                        .sorted()
+                        .findFirst()
+                        .orElse(0)));
     }
 }
