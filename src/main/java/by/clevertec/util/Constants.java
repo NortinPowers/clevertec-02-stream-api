@@ -39,4 +39,12 @@ public class Constants {
         public static final String ALUMINUM = "Aluminum";
         public static final String STEEL = "Steel";
     }
+
+    @UtilityClass
+    public class Faculty {
+        public static final String PHYSICS = "Physics";
+        public static final String COMPUTER_SCIENCE = "ComputerScience";
+        public static final String MATHEMATICS = "Mathematics";
+        public static final String CHEMISTRY = "Chemistry";
+    }
 }

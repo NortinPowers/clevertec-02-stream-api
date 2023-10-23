@@ -1,5 +1,7 @@
 package by.clevertec;
 
+import static by.clevertec.util.CalcUtil.getAverageFirstExamMark;
+import static by.clevertec.util.CalcUtil.getFilterConditionForRangeOfAgesOfPerson;
 import static by.clevertec.util.ConsoleUtil.getTaskMark;
 import static by.clevertec.util.Constants.AGE_TEN_YEARS;
 import static by.clevertec.util.Constants.AGE_THIRTY_YEARS;
@@ -9,6 +11,10 @@ import static by.clevertec.util.Constants.Country.HUNGARIAN;
 import static by.clevertec.util.Constants.Country.JAPANESE;
 import static by.clevertec.util.Constants.Country.OCEANIA;
 import static by.clevertec.util.Constants.FARE;
+import static by.clevertec.util.Constants.Faculty.CHEMISTRY;
+import static by.clevertec.util.Constants.Faculty.COMPUTER_SCIENCE;
+import static by.clevertec.util.Constants.Faculty.MATHEMATICS;
+import static by.clevertec.util.Constants.Faculty.PHYSICS;
 import static by.clevertec.util.Constants.Gender.FEMALE;
 import static by.clevertec.util.Constants.Gender.MALE;
 import static by.clevertec.util.Constants.Region.INDONESIAN;
@@ -16,7 +22,6 @@ import static by.clevertec.util.Constants.SUBLIST_SIZE;
 import static by.clevertec.util.Constants.VaseMaterial.ALUMINUM;
 import static by.clevertec.util.Constants.VaseMaterial.GLASS;
 import static by.clevertec.util.Constants.VaseMaterial.STEEL;
-import static by.clevertec.util.PersonUtil.getFilterConditionByPersonAge;
 import static java.lang.Math.min;
 
 import by.clevertec.model.Animal;
@@ -43,11 +48,13 @@ public class Main {
 
     private static final List<Animal> ANIMALS;
     private static final List<Student> STUDENTS;
+    private static final List<Examination> EXAMINATIONS;
     private static final DecimalFormat FORMAT;
 
     static {
         ANIMALS = Util.getAnimals();
         STUDENTS = Util.getStudents();
+        EXAMINATIONS = Util.getExaminations();
         FORMAT = new DecimalFormat("#.##");
     }
 
@@ -184,7 +191,7 @@ public class Main {
         List<Person> persons = Util.getPersons();
         persons.stream()
                 .filter(person -> person.getGender().equals(MALE))
-                .filter(person -> getFilterConditionByPersonAge(person, 18, 27))
+                .filter(person -> getFilterConditionForRangeOfAgesOfPerson(person, 18, 27))
                 .sorted(Comparator.comparing(Person::getRecruitmentGroup))
                 .limit(200)
                 .forEach(person -> System.out.println("Ready to serve: " + person));
@@ -201,7 +208,7 @@ public class Main {
                                 houses.stream()
                                         .filter(house -> !house.getBuildingType().equals(BUILDING_TYPE_HOSPITAL))
                                         .flatMap(house -> house.getPersonList().stream())
-                                        .filter(person -> !getFilterConditionByPersonAge(person, 18, 58)),
+                                        .filter(person -> !getFilterConditionForRangeOfAgesOfPerson(person, 18, 58)),
                                 houses.stream()
                                         .filter(house -> !house.getBuildingType().equals(BUILDING_TYPE_HOSPITAL))
                                         .flatMap(house -> house.getPersonList().stream())
@@ -257,9 +264,7 @@ public class Main {
                 .sorted(Comparator.comparing(Flower::getOrigin).reversed()
                         .thenComparing(Flower::getPrice)
                         .thenComparing(Comparator.comparing(Flower::getWaterConsumptionPerDay).reversed()))
-//                .filter(flower -> flower.getCommonName().startsWith("S") && flower.getCommonName().substring(1).contains("c"))
                 .filter(flower -> Pattern.matches("^[C-S].*", flower.getCommonName()))
-//                .filter(flower -> Pattern.matches("^[S-V].*", flower.getCommonName()))
                 .filter(Flower::isShadePreferred)
                 .filter(flower -> flower.getFlowerVaseMaterial().contains(GLASS) || flower.getFlowerVaseMaterial().contains(ALUMINUM) || flower.getFlowerVaseMaterial().contains(STEEL))
                 .toList()
@@ -294,11 +299,10 @@ public class Main {
     }
 
     public static void task19() {
-        List<Examination> examinations = Util.getExaminations();
         String group = "P-1";
         int examNumber = 4;
         System.out.println("List of students from group " + group + " who passed exam #" + examNumber);
-        examinations.stream()
+        EXAMINATIONS.stream()
                 .filter(examination -> examination.getExam3() > examNumber)
                 .map(Examination::getStudentId)
                 .forEach(id -> {
@@ -311,8 +315,51 @@ public class Main {
     }
 
     public static void task20() {
-        List<Student> students = Util.getStudents();
-//        students.stream() Продолжить ...
+        AtomicReference<Double> physicsSumMark = new AtomicReference<>((double) 0);
+        AtomicReference<Integer> physicsCount = new AtomicReference<>(0);
+        AtomicReference<Double> physicsAverageMark = new AtomicReference<>((double) 0);
+        AtomicReference<Double> computerScienceSumMark = new AtomicReference<>((double) 0);
+        AtomicReference<Integer> computerScienceCount = new AtomicReference<>(0);
+        AtomicReference<Double> computerScienceAverageMark = new AtomicReference<>((double) 0);
+        AtomicReference<Double> mathematicsSumMark = new AtomicReference<>((double) 0);
+        AtomicReference<Integer> mathematicsCount = new AtomicReference<>(0);
+        AtomicReference<Double> mathematicsAverageMark = new AtomicReference<>((double) 0);
+        AtomicReference<Double> chemistrySumMark = new AtomicReference<>((double) 0);
+        AtomicReference<Integer> chemistryCount = new AtomicReference<>(0);
+        AtomicReference<Double> chemistryAverageMark = new AtomicReference<>((double) 0);
+        AtomicReference<String> facultyWithHighAverageGradeOnFirstExam = new AtomicReference<>();
+        STUDENTS.stream()
+                .collect(Collectors.groupingBy(Student::getFaculty))
+                .forEach((key, value1) -> value1
+                        .forEach(student ->
+                                EXAMINATIONS.stream()
+                                        .filter(examination -> examination.getStudentId() == student.getId())
+                                        .findAny()
+                                        .ifPresent(mark -> {
+                                            Optional<Examination> optional = EXAMINATIONS.stream()
+                                                    .filter(examination -> examination.getStudentId() == student.getId())
+                                                    .findFirst();
+                                            switch (student.getFaculty()) {
+                                                case PHYSICS ->
+                                                        physicsAverageMark.updateAndGet(value -> getAverageFirstExamMark(physicsSumMark, optional, physicsCount));
+                                                case COMPUTER_SCIENCE ->
+                                                        computerScienceAverageMark.updateAndGet(value -> getAverageFirstExamMark(computerScienceSumMark, optional, computerScienceCount));
+                                                case MATHEMATICS ->
+                                                        mathematicsAverageMark.updateAndGet(value -> getAverageFirstExamMark(mathematicsSumMark, optional, mathematicsCount));
+                                                case CHEMISTRY ->
+                                                        chemistryAverageMark.updateAndGet(value -> getAverageFirstExamMark(chemistrySumMark, optional, chemistryCount));
+                                                default ->
+                                                        throw new IllegalStateException("Unexpected value: " + student.getFaculty());
+                                            }
+                                            facultyWithHighAverageGradeOnFirstExam.updateAndGet(value -> physicsAverageMark.get() > computerScienceSumMark.get()
+                                                    ? PHYSICS
+                                                    : computerScienceSumMark.get() > mathematicsAverageMark.get()
+                                                    ? COMPUTER_SCIENCE
+                                                    : mathematicsAverageMark.get() > chemistryAverageMark.get()
+                                                    ? MATHEMATICS
+                                                    : CHEMISTRY);
+                                        })));
+        System.out.println("The faculty with a high level of academic performance in the first exam is " + facultyWithHighAverageGradeOnFirstExam);
     }
 
     public static void task21() {
