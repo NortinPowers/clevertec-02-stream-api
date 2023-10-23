@@ -31,6 +31,7 @@ import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -66,7 +67,7 @@ public class Main {
 //        task14();
 //        task15();
 //        task16();
-        task17();
+//        task17();
         task18();
         task19();
         task20();
@@ -284,13 +285,16 @@ public class Main {
     }
 
     public static void task18() {
-        List<Student> students = Util.getStudents();
-        List<Examination> examinations = Util.getExaminations();
-//        students.stream() Продолжить ...
+        STUDENTS.stream()
+                .collect(Collectors.groupingBy(Student::getFaculty, Collectors.averagingInt(Student::getAge)))
+                .entrySet().stream()
+                .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
+                .forEach(entry -> System.out.println("Faculty: " + entry.getKey() + ", average age of students: " + FORMAT.format(entry.getValue())));
     }
 
     public static void task19() {
         List<Student> students = Util.getStudents();
+        List<Examination> examinations = Util.getExaminations();
 //        students.stream() Продолжить ...
     }
 
