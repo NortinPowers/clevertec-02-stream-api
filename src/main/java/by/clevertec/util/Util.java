@@ -10,9 +10,10 @@ import by.clevertec.model.Student;
 import by.clevertec.util.reader.JsonReader;
 import by.clevertec.util.reader.Reader;
 import com.fasterxml.jackson.core.type.TypeReference;
-
 import java.util.List;
+import lombok.experimental.UtilityClass;
 
+@UtilityClass
 public class Util {
 
     private static final String ANIMALS_DATA_FILE = "src/main/resources/json/animals.json";
@@ -24,25 +25,25 @@ public class Util {
     private static final String BUILDING_TYPE_HOSPITAL = "Hospital";
     private static final String BUILDING_TYPE_OTHER = "Civil building";
 
-    private static final Reader reader = new JsonReader();
+    private static final Reader READER = new JsonReader();
 
     public static List<Animal> getAnimals() {
-        return reader.getModelData(ANIMALS_DATA_FILE, new TypeReference<>() {
+        return READER.getModelData(ANIMALS_DATA_FILE, new TypeReference<>() {
         });
     }
 
     public static List<Person> getPersons() {
-        return reader.getModelData(RECRUITS_DATA_FILE, new TypeReference<>() {
+        return READER.getModelData(RECRUITS_DATA_FILE, new TypeReference<>() {
         });
     }
 
     public static List<Car> getCars() {
-        return reader.getModelData(CARS_DATA_FILE, new TypeReference<>() {
+        return READER.getModelData(CARS_DATA_FILE, new TypeReference<>() {
         });
     }
 
     public static List<Flower> getFlowers() {
-        return reader.getModelData(FLOWERS_DATA_FILE, new TypeReference<>() {
+        return READER.getModelData(FLOWERS_DATA_FILE, new TypeReference<>() {
         });
     }
 
@@ -65,12 +66,12 @@ public class Util {
     }
 
     public static List<Student> getStudents() {
-        return reader.getModelData(STUDENTS_DATA_FILE, new TypeReference<>() {
+        return READER.getModelData(STUDENTS_DATA_FILE, new TypeReference<>() {
         });
     }
 
     public static List<Examination> getExaminations() {
-        return reader.getModelData(EXAMINATION_DATA_FILE, new TypeReference<>() {
+        return READER.getModelData(EXAMINATION_DATA_FILE, new TypeReference<>() {
         });
     }
 }

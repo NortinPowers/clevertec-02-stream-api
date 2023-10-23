@@ -84,9 +84,9 @@ public class Main {
         getTaskMark(2);
         ANIMALS.stream()
                 .filter(animal -> animal.getOrigin().equals(JAPANESE))
-                .peek(animal -> animal.setBread(animal.getBread().toUpperCase()))
+                .peek(animal -> animal.setBreed(animal.getBreed().toUpperCase()))
                 .filter(animal -> animal.getGender().equals(FEMALE))
-                .forEach(animal -> System.out.println(animal.getBread()));
+                .forEach(animal -> System.out.println(animal.getBreed()));
     }
 
     public static void task3() {
@@ -137,7 +137,7 @@ public class Main {
     public static void task8() {
         getTaskMark(8);
         ANIMALS.stream()
-                .sorted(Comparator.comparing(Animal::getBread))
+                .sorted(Comparator.comparing(Animal::getBreed))
                 .limit(100)
                 .max(Comparator.comparing(Animal::getAge))
                 .ifPresent(animal -> System.out.printf("The age of the oldest animal is %s years old\n", animal.getAge()));
@@ -146,7 +146,7 @@ public class Main {
     public static void task9() {
         getTaskMark(9);
         ANIMALS.stream()
-                .map(animal -> animal.getBread().toCharArray())
+                .map(animal -> animal.getBreed().toCharArray())
                 .mapToInt(array -> array.length)
                 .min()
                 .ifPresent(length -> System.out.println("The length of the shortest array is " + length));
