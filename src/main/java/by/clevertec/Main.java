@@ -32,6 +32,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -68,8 +69,8 @@ public class Main {
 //        task15();
 //        task16();
 //        task17();
-        task18();
-        task19();
+//        task18();
+//        task19();
         task20();
         task21();
         task22();
@@ -293,9 +294,20 @@ public class Main {
     }
 
     public static void task19() {
-        List<Student> students = Util.getStudents();
         List<Examination> examinations = Util.getExaminations();
-//        students.stream() Продолжить ...
+        String group = "P-1";
+        int examNumber = 4;
+        System.out.println("List of students from group " + group + " who passed exam #" + examNumber);
+        examinations.stream()
+                .filter(examination -> examination.getExam3() > examNumber)
+                .map(Examination::getStudentId)
+                .forEach(id -> {
+                    Optional<Student> studentOptional = STUDENTS.stream()
+                            .filter(student -> id == student.getId())
+                            .filter(student -> student.getGroup().equals(group))
+                            .findFirst();
+                    studentOptional.ifPresent(System.out::println);
+                });
     }
 
     public static void task20() {
