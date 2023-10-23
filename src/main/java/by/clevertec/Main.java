@@ -40,11 +40,12 @@ import java.util.stream.Stream;
 public class Main {
 
     private static final List<Animal> ANIMALS;
-
+    private static final List<Student> STUDENTS;
     private static final DecimalFormat FORMAT;
 
     static {
         ANIMALS = Util.getAnimals();
+        STUDENTS = Util.getStudents();
         FORMAT = new DecimalFormat("#.##");
     }
 
@@ -63,8 +64,8 @@ public class Main {
 //        task12();
 //        task13();
 //        task14();
-        task15();
-        task16();
+//        task15();
+//        task16();
         task17();
         task18();
         task19();
@@ -173,7 +174,7 @@ public class Main {
                 .mapToInt(Animal::getAge)
                 .average()
                 .ifPresentOrElse(age -> System.out.println("The average age of the animals in Indonesia is " + age),
-                        () -> System.out.println("В списке отсутствуют животные из Индонезии"));
+                        () -> System.out.println("There are no animals from Indonesia in the list"));
     }
 
     public static void task12() {
@@ -269,13 +270,17 @@ public class Main {
     }
 
     public static void task16() {
-        List<Student> students = Util.getStudents();
-//        students.stream() Продолжить ...
+        STUDENTS.stream()
+                .filter(student -> student.getAge() < 18)
+                .sorted(Comparator.comparing(Student::getSurname))
+                .forEach(student -> System.out.println(student.getSurname() + ", age:" + student.getAge()));
     }
 
     public static void task17() {
-        List<Student> students = Util.getStudents();
-//        students.stream() Продолжить ...
+        STUDENTS.stream()
+                .map(Student::getGroup)
+                .distinct()
+                .forEach(System.out::println);
     }
 
     public static void task18() {
