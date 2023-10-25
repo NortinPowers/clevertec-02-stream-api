@@ -1,7 +1,8 @@
 package by.clevertec;
 
-import static by.clevertec.util.CalcUtil.getAverageFirstExamMark;
 import static by.clevertec.util.CalcUtil.getFilterConditionForRangeOfAgesOfPerson;
+import static by.clevertec.util.CalcUtil.selectFacultyWithHightGrade;
+import static by.clevertec.util.CalcUtil.setFacultyMark;
 import static by.clevertec.util.ConsoleUtil.getTaskMark;
 import static by.clevertec.util.Constants.AGE_TEN_YEARS;
 import static by.clevertec.util.Constants.AGE_THIRTY_YEARS;
@@ -11,10 +12,6 @@ import static by.clevertec.util.Constants.Country.HUNGARIAN;
 import static by.clevertec.util.Constants.Country.JAPANESE;
 import static by.clevertec.util.Constants.Country.OCEANIA;
 import static by.clevertec.util.Constants.FARE;
-import static by.clevertec.util.Constants.Faculty.CHEMISTRY;
-import static by.clevertec.util.Constants.Faculty.COMPUTER_SCIENCE;
-import static by.clevertec.util.Constants.Faculty.MATHEMATICS;
-import static by.clevertec.util.Constants.Faculty.PHYSICS;
 import static by.clevertec.util.Constants.Gender.FEMALE;
 import static by.clevertec.util.Constants.Gender.MALE;
 import static by.clevertec.util.Constants.Region.INDONESIAN;
@@ -31,9 +28,9 @@ import by.clevertec.model.Flower;
 import by.clevertec.model.House;
 import by.clevertec.model.Person;
 import by.clevertec.model.Student;
+import by.clevertec.util.CarUtil;
 import by.clevertec.util.Util;
 import java.text.DecimalFormat;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -224,23 +221,7 @@ public class Main {
         List<Car> cars = Util.getCars();
         AtomicReference<Double> totalPrice = new AtomicReference<>((double) 0);
         cars.stream()
-                .collect(Collectors.groupingBy(car -> {
-                    if (car.getColor().equals("White") || car.getColor().equals("Jaguar")) {
-                        return "Turkmenistan";
-                    } else if (car.getMass() <= 1500 && (car.getCarMake().equals("BMW") || car.getCarMake().equals("Lexus") || car.getCarMake().equals("Chrysler") || car.getCarMake().equals("Toyota"))) {
-                        return "Uzbekistan";
-                    } else if (car.getMass() > 4000 && (car.getColor().equals("Black") || car.getCarMake().equals("GMC") || car.getCarMake().equals("Dodge"))) {
-                        return "Kazakhstan";
-                    } else if (car.getReleaseYear() <= 1982 || car.getCarModel().equals("Civic") || car.getCarModel().equals("Cherokee")) {
-                        return "Kyrgyzstan";
-                    } else if (!Arrays.asList("Yellow", "Red", "Green", "Blue").contains(car.getColor()) || car.getPrice() > 40000) {
-                        return "Russia";
-                    } else if (car.getVin().contains("59")) {
-                        return "Mongolia";
-                    } else {
-                        return "Junkyard";
-                    }
-                })).values().stream()
+                .collect(Collectors.groupingBy(CarUtil::getKey)).values().stream()
                 .limit(6)
                 .forEach(list -> {
                     System.out.println("Fare: " + FORMAT.format(FARE * list.stream()
@@ -344,25 +325,8 @@ public class Main {
                                             Optional<Examination> optional = EXAMINATIONS.stream()
                                                     .filter(examination -> examination.getStudentId() == student.getId())
                                                     .findFirst();
-                                            switch (student.getFaculty()) {
-                                                case PHYSICS ->
-                                                        physicsAverageMark.updateAndGet(value -> getAverageFirstExamMark(physicsSumMark, optional, physicsCount));
-                                                case COMPUTER_SCIENCE ->
-                                                        computerScienceAverageMark.updateAndGet(value -> getAverageFirstExamMark(computerScienceSumMark, optional, computerScienceCount));
-                                                case MATHEMATICS ->
-                                                        mathematicsAverageMark.updateAndGet(value -> getAverageFirstExamMark(mathematicsSumMark, optional, mathematicsCount));
-                                                case CHEMISTRY ->
-                                                        chemistryAverageMark.updateAndGet(value -> getAverageFirstExamMark(chemistrySumMark, optional, chemistryCount));
-                                                default ->
-                                                        throw new IllegalStateException("Unexpected value: " + student.getFaculty());
-                                            }
-                                            facultyWithHighAverageGradeOnFirstExam.updateAndGet(value -> physicsAverageMark.get() > computerScienceSumMark.get()
-                                                    ? PHYSICS
-                                                    : computerScienceSumMark.get() > mathematicsAverageMark.get()
-                                                    ? COMPUTER_SCIENCE
-                                                    : mathematicsAverageMark.get() > chemistryAverageMark.get()
-                                                    ? MATHEMATICS
-                                                    : CHEMISTRY);
+                                            setFacultyMark(physicsSumMark, physicsCount, physicsAverageMark, computerScienceSumMark, computerScienceCount, computerScienceAverageMark, mathematicsSumMark, mathematicsCount, mathematicsAverageMark, chemistrySumMark, chemistryCount, chemistryAverageMark, student, optional);
+                                            selectFacultyWithHightGrade(physicsAverageMark, computerScienceSumMark, mathematicsAverageMark, chemistryAverageMark, facultyWithHighAverageGradeOnFirstExam);
                                         })));
         System.out.println("The faculty with a high level of academic performance in the first exam is " + facultyWithHighAverageGradeOnFirstExam);
     }
